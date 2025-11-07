@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final CarouselController _controller = CarouselController();
+  int _currentIndex = 0;
 
   final posterList = const <String>[
     'assets/images/ramadhan-kareem.jpg',
@@ -158,12 +159,53 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index, realIndex) {
             final poster = posterList[index];
             return Container(
-              child:  Image.asset(poster),
+              margin: EdgeInsets.all(15),
+              child:  ClipRRect(
+                borderRadius: BorderRadiusGeometry.circular(10),
+                child: Image.asset(
+                  poster,
+                  fit: BoxFit.fitWidth,
+                  width: double.infinity,
+                  ),
+              ),
             );
           },
-          options: CarouselOptions(),
+          options: CarouselOptions(
+            autoPlay: true,
+            height: 270,
+            enlargeCenterPage: true,
+            viewportFraction: 0.7,
+            onPageChanged: (index, reason) {
+              setState(() => _currentIndex = index);
+            },
+          ),
         ),
+
+        //DOT INDICATOR
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: posterList.asMap().entries.map((entery){
+            return GestureDetector(
+              onTap: () => _currentIndex.animateToPage(entery.key),
+              child: Container(
+                width: 10,
+                height: 10,
+                margin: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentIndex == entery.key
+                  ? const Color.fromARGB(60, 255, 214, 64) 
+                  : const Color.fromARGB(168, 255, 214, 64)
+                ),
+              ),
+            );
+          }).toList(),
+        )
       ],
     );
   }
+}
+
+extension on int {
+  void animateToPage(int key) {}
 }
